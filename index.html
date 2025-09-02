@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Rigid Body Transform Prototype</title>
+  <style>
+    body { margin: 0; font-family: monospace; }
+    #ui {
+      position: absolute; top: 10px; left: 10px;
+      background: rgba(255,255,255,0.9); padding: 10px;
+      border-radius: 8px; font-size: 14px;
+    }
+    input { width: 80px; }
+    pre { font-size: 12px; }
+    .viz { width: 400px; height: 300px; border: 1px solid #ccc; margin: 20px 0; }
+
+    .container-input {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .container-input > input {
+        margin-right: 1rem;
+    }
+
+    .controls {
+        display: flex;
+        flex-direction: row;
+    }
+  </style>
+</head>
+<body>
+<div id="ui">
+  <h1>Rigid Body Transforms</h1>
+  <p>
+    A rigid body transformation is a linear 3D transformation consisting of:
+    <ul>
+        <li>A translation (a <b>change in position</b>)</li>
+        <li>A rotation (a <b>change in orientation</b>)</li>
+    </ul>
+
+    Note that a rigid body transformation can not stretch, bend nor flip an object. It is most useful for 
+    describing relative locations and poses.
+  </p>
+
+  <p>
+    Describing a rigid body transformation can thus be done by using 6 numbers:
+    <ul>
+        <li>Change in <b>x</b></li>
+        <li>Change in <b>y</b></li>
+        <li>Change in <b>z</b></li>
+        <li>Rotation around x</li>
+        <li>Rotation around y</li>
+        <li>Rotation around z</li>
+    </ul>
+
+    <!-- TODO: SO(3) mention -->
+    <!-- TODO: footnote about body frame conventions -->
+
+    This way of describing rotations is called <i>Euler angles</i>, and is the method used in tools like <a href="https://wiki.ros.org/tf2">tf2</a>.
+
+    Euler angles are simple to understand and visualize, but suffer from some problems that make them sub optimal to use in computations. Internally,
+    TF2 and other software therefore typically use <a href="https://en.wikipedia.org/wiki/Quaternion">quaternions</a>. But you don't have to worry too 
+    much about that (yet).
+  </p>
+
+  <h3>Conventions</h3>
+  <p>
+  In this course we use some conventions. I've tried to align them with the conventions used in ROS2.
+  <ul>
+      <li>The first axis (x-axis) is colored <span style="color: red"><b>red</b></span></li>
+      <li>The second axis (y-axis) is colored <span style="color: #08e700"><b>green</b></span></li>
+      <li>The third axis (z-axis) is colored <span style="color: blue"><b>blue</b></span></li>
+      <li>All translations <b>and rotations</b> are described in the <b>parent frame</b>, i.e. the frame we transform <i>from</i>. This is called extrinsic rotations. Read more <a href="https://mecademic.com/insights/academic-tutorials/space-orientation-euler-angles/">here</a>.</li>
+      <li>Rotation around the (parent's) x-axis is referred to as <b>roll</b></li>
+      <li>Rotation around the (parent's) y-axis is referred to as <b>pitch</b></li>
+      <li>Rotation around the (parent's) z-axis is referred to as <b>yaw</b></li>
+  </ul>
+  </p>
+
+  <p>
+    Before we continue, you can get a feeling for transformations in the interactive visualization below.
+  </p>
+
+  <div>
+      <div id="viz1" class="viz"></div>
+      <div class="controls">
+          <div class="container-input">
+              Tx: <input type="range" class="tx" min="-5" max="5" step="0.1" value="0">
+          </div class="container-input">
+          <div class="container-input">
+              Ty: <input type="range" class="ty" min="-5" max="5" step="0.1" value="0">
+          </div class="container-input">
+          <div class="container-input">
+              Tz: <input type="range" class="tz" min="-5" max="5" step="0.1" value="0">
+          </div class="container-input">
+          <div class="container-input">
+              Roll: <input type="range" class="rx" min="0" max="360" step="1" value="0">
+          </div class="container-input">
+          <div class="container-input">
+              Pitch: <input type="range" class="ry" min="0" max="360" step="1" value="0">
+          </div class="container-input">
+          <div class="container-input">
+              Yaw: <input type="range" class="rz" min="0" max="360" step="1" value="0">
+          </div class="container-input">
+      <br>
+      <pre class="matrix"></pre>
+  </div>
+
+  <p>
+    Now let’s try adding rotations. Notice how rotations in ROS are
+    <strong>extrinsic</strong>, meaning they are applied in the parent frame.
+  </p>
+
+  <div id="viz2" class="viz"></div>
+
+  <p>
+    Later, we will combine multiple transforms to build up a chain of frames,
+    like you would see in TF2.
+  </p>
+
+  <div id="viz3" class="viz"></div>
+
+
+  <pre id="matrix"></pre>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.179.1/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.179.1/examples/jsm/"
+  }
+}
+</script>
+<script type="module" src="main.js"></script>
+</body>
+</html>
