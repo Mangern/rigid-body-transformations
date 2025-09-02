@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Rigid Body Transform Prototype</title>
   <style>
-    body { margin: 0; font-family: monospace; }
+    body { margin: 0; padding-left: 2rem; padding-right: 2rem; font-family: monospace; }
     #ui {
       position: absolute; top: 10px; left: 10px;
       background: rgba(255,255,255,0.9); padding: 10px;
@@ -72,7 +72,9 @@
       <li>The first axis (x-axis) is colored <span style="color: red"><b>red</b></span></li>
       <li>The second axis (y-axis) is colored <span style="color: #08e700"><b>green</b></span></li>
       <li>The third axis (z-axis) is colored <span style="color: blue"><b>blue</b></span></li>
-      <li>All translations <b>and rotations</b> are described in the <b>parent frame</b>, i.e. the frame we transform <i>from</i>. This is called extrinsic rotations. Read more <a href="https://mecademic.com/insights/academic-tutorials/space-orientation-euler-angles/">here</a>.</li>
+      <li>All translations <b>and rotations</b> are described in the <b>parent frame</b>, i.e. the frame we transform <i>from</i>. 
+          This is called extrinsic rotations or Euler 'ZYX' order. 
+          Read more <a href="https://mecademic.com/insights/academic-tutorials/space-orientation-euler-angles/">here</a>.</li>
       <li>Rotation around the (parent's) x-axis is referred to as <b>roll</b></li>
       <li>Rotation around the (parent's) y-axis is referred to as <b>pitch</b></li>
       <li>Rotation around the (parent's) z-axis is referred to as <b>yaw</b></li>
@@ -85,45 +87,91 @@
 
   <div>
       <div id="viz1" class="viz"></div>
+      <pre class="ros2cmd">ros2 run tf2_ros static_transform_publisher --frame-id parent --child-frame-id child</pre>
       <div class="controls">
           <div class="container-input">
-              Tx: <input type="range" class="tx" min="-5" max="5" step="0.1" value="0">
-          </div class="container-input">
+              x: <input type="range" class="tx" min="-5" max="5" step="0.1" value="0">
+          </div>
           <div class="container-input">
-              Ty: <input type="range" class="ty" min="-5" max="5" step="0.1" value="0">
-          </div class="container-input">
+              y: <input type="range" class="ty" min="-5" max="5" step="0.1" value="0">
+          </div>
           <div class="container-input">
-              Tz: <input type="range" class="tz" min="-5" max="5" step="0.1" value="0">
-          </div class="container-input">
+              z: <input type="range" class="tz" min="-5" max="5" step="0.1" value="0">
+          </div>
           <div class="container-input">
-              Roll: <input type="range" class="rx" min="0" max="360" step="1" value="0">
-          </div class="container-input">
+              roll: <input type="range" class="rx" min="0" max="360" step="1" value="0">
+          </div>
           <div class="container-input">
-              Pitch: <input type="range" class="ry" min="0" max="360" step="1" value="0">
-          </div class="container-input">
+              pitch: <input type="range" class="ry" min="0" max="360" step="1" value="0">
+          </div>
           <div class="container-input">
-              Yaw: <input type="range" class="rz" min="0" max="360" step="1" value="0">
-          </div class="container-input">
-      <br>
+              yaw: <input type="range" class="rz" min="0" max="360" step="1" value="0">
+          </div>
+          <div class="container-input">
+              <input type="button" class="reset" value="reset"></input>
+          </div>
+      </div>
       <pre class="matrix"></pre>
   </div>
 
+  <h2>Tasks</h2>
   <p>
-    Now let’s try adding rotations. Notice how rotations in ROS are
-    <strong>extrinsic</strong>, meaning they are applied in the parent frame.
+    What follows are some tasks I have prepared to force you to become familiar with using transforms.
   </p>
 
-  <div id="viz2" class="viz"></div>
+  <h3>Task 1 - Static translation</h3>
 
   <p>
-    Later, we will combine multiple transforms to build up a chain of frames,
-    like you would see in TF2.
+    We have arrived at the testing site and placed our Ground Control Station. The drone will launch from a launch pad placed on the runway.
+    We are going to perform some measurements from the drone and the GCS simultaneously, so it would be helpful to be able to convert coordinates relative 
+    to the drone to coordinates relative to the GCS. When the drone is started, it places its origin on the launch pad, and coordinates measured from the 
+    drone will be relative to the launch pad.
   </p>
 
-  <div id="viz3" class="viz"></div>
+  <p>
+  We have estimated the launch pad to be <b>5m</b> in the x-direction, <b>2m</b> in the y-direction and <b>-1m</b> in the z-direction relative to the GCS.
+  </p>
+
+  <p>
+  Please provide the transformation <b>gcs -> launch_pad</b>.
+  </p>
+  <div>
+      <div id="viz2" class="viz"></div>
+      <pre class="ros2cmd">ros2 run tf2_ros static_transform_publisher --frame-id gcs --child-frame-id launch_pad</pre>
+      <div class="controls">
+          <div class="container-input">
+              x: <input type="number" class="tx" value="0">
+          </div>
+          <div class="container-input">
+              y: <input type="number" class="ty" value="0">
+          </div>
+          <div class="container-input">
+              z: <input type="number" class="tz" value="0">
+          </div>
+          <div class="container-input">
+              <input type="hidden" class="rx" value="0">
+          </div>
+          <div class="container-input">
+              <input type="hidden" class="ry" value="0">
+          </div>
+          <div class="container-input">
+              <input type="hidden" class="rz" value="0">
+          </div>
+          <div class="container-input">
+              <input type="button" class="reset" value="reset"></input>
+          </div>
+
+      </div>
+      <br>
+      <div class="status" style="color: #08e700"></div>
+  </div>
 
 
-  <pre id="matrix"></pre>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
 </div>
 
 <script type="importmap">

@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const ASPECT = 16 / 9;
+const EPS = 1e-7;
 
 function makeAxes(size = 2) {
     const group = new THREE.Group();
@@ -75,6 +76,19 @@ function createVisualization(containerId) {
     control_container.querySelectorAll("input").forEach(el => el.addEventListener("input", updateTransform));
     updateTransform();
 
+    const reset_btn = control_container.querySelector(".reset");
+    if (reset_btn) {
+        reset_btn.addEventListener("click", () => {
+            control_container.querySelector(".tx").value = "0";
+            control_container.querySelector(".ty").value = "0";
+            control_container.querySelector(".tz").value = "0";
+            control_container.querySelector(".rx").value = "0";
+            control_container.querySelector(".ry").value = "0";
+            control_container.querySelector(".rz").value = "0";
+            control_container.querySelector(".rz").dispatchEvent(new Event("input")); // trigger normal input stuff
+        });
+    }
+
     function animate() {
         requestAnimationFrame(animate);
         renderer.render(scene, camera);
@@ -86,6 +100,60 @@ function createVisualization(containerId) {
         camera.updateProjectionMatrix();
         renderer.setSize(container.clientWidth, container.clientHeight);
     });
+
+    return container.parentNode;
 }
 
-createVisualization("viz1");
+const viz1 = createVisualization("viz1");
+const viz1showros = () => {
+    const tx = viz1.querySelector(".tx").value;
+    const ty = viz1.querySelector(".ty").value;
+    const tz = viz1.querySelector(".tz").value;
+    const rx = THREE.MathUtils.degToRad(viz1.querySelector(".rx").value);
+    const ry = THREE.MathUtils.degToRad(viz1.querySelector(".ry").value);
+    const rz = THREE.MathUtils.degToRad(viz1.querySelector(".rz").value);
+
+    viz1.querySelector(".ros2cmd").innerHTML = `ros2 run tf2_ros static_transform_publisher --frame-id parent --child-frame-id child --x ${tx} --y ${ty} --z ${tz} --roll ${rx} --pitch ${ry} --yaw ${rz}`;
+}
+viz1.querySelectorAll("input").forEach(el => el.addEventListener("input", viz1showros));
+
+const viz2 = createVisualization("viz2");
+const viz2showros = () => {
+    const tx = viz2.querySelector(".tx").value;
+    const ty = viz2.querySelector(".ty").value;
+    const tz = viz2.querySelector(".tz").value;
+    const rx = THREE.MathUtils.degToRad(viz2.querySelector(".rx").value);
+    const ry = THREE.MathUtils.degToRad(viz2.querySelector(".ry").value);
+    const rz = THREE.MathUtils.degToRad(viz2.querySelector(".rz").value);
+
+    viz2.querySelector(".ros2cmd").innerHTML = `ros2 run tf2_ros static_transform_publisher --frame-id gcs --child-frame-id launch_pad --x ${tx} --y ${ty} --z ${tz}`;
+}
+
+const viz2verify = () => {
+    const tx = parseFloat(viz2.querySelector(".tx").value);
+    const ty = parseFloat(viz2.querySelector(".ty").value);
+    const tz = parseFloat(viz2.querySelector(".tz").value);
+    const rx = THREE.MathUtils.degToRad(viz2.querySelector(".rx").value);
+    const ry = THREE.MathUtils.degToRad(viz2.querySelector(".ry").value);
+    const rz = THREE.MathUtils.degToRad(viz2.querySelector(".rz").value);
+
+    const success = (
+        (Math.abs(tx - 5.0) < EPS) &&
+        (Math.abs(ty - 2.0) < EPS) &&
+        (Math.abs(tz + 1.0) < EPS) &&
+        (Math.abs(rx - 0.0) < EPS) &&
+        (Math.abs(ry - 0.0) < EPS) &&
+        (Math.abs(rz - 0.0) < EPS)
+    );
+
+    const status_el = viz2.querySelector(".status");
+    if (success) {
+        status_el.innerHTML = "Success!";
+    } else {
+        status_el.innerHTML = "";
+    }
+}
+
+
+viz2.querySelectorAll("input").forEach(el => el.addEventListener("input", viz2showros));
+viz2.querySelectorAll("input").forEach(el => el.addEventListener("input", viz2verify));
