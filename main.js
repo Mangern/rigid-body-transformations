@@ -153,6 +153,8 @@ const viz2verify = () => {
         status_el.innerHTML = "";
     }
 }
+viz2showros();
+viz2verify();
 
 
 viz2.querySelectorAll("input").forEach(el => el.addEventListener("input", viz2showros));
@@ -194,6 +196,8 @@ const viz3verify = () => {
         status_el.innerHTML = "";
     }
 }
+viz3showros();
+viz3verify();
 
 
 viz3.querySelectorAll("input").forEach(el => el.addEventListener("input", viz3showros));

@@ -28,6 +28,11 @@
         display: flex;
         flex-direction: row;
     }
+
+    .status {
+        color: #08d700;
+        font-size: 1.5rem;
+    }
   </style>
 </head>
 <body>
@@ -75,11 +80,21 @@
       <li>All translations <b>and rotations</b> are described in the <b>parent frame</b>, i.e. the frame we transform <i>from</i>. 
           This is called extrinsic rotations or Euler 'ZYX' order. 
           Read more <a href="https://mecademic.com/insights/academic-tutorials/space-orientation-euler-angles/">here</a>.</li>
-      <li>Rotation around the (parent's) x-axis is referred to as <b>roll</b></li>
-      <li>Rotation around the (parent's) y-axis is referred to as <b>pitch</b></li>
-      <li>Rotation around the (parent's) z-axis is referred to as <b>yaw</b></li>
+      <li>Rotation around the (parent) x-axis is referred to as <b>roll</b></li>
+      <li>Rotation around the (parent) y-axis is referred to as <b>pitch</b></li>
+      <li>Rotation around the (parent) z-axis is referred to as <b>yaw</b></li>
       <li>For simplicity, the input elements for the rotations in this course are defined in <b>degrees</b>. Before computations they are of course translated to radians.</li>
   </ul>
+  </p>
+
+  <h3>Controls</h3>
+  <p>
+    In each visualization, you can control the camera view.
+    <ul>
+        <li>To rotate the view, hold left click and drag with the mouse</li>
+        <li>To translate the view, hold right click, shift or ctrl and drag with the mouse</li>
+        <li>To zoom, scroll using the mouse(pad)</li>
+    </ul>
   </p>
 
   <p>
@@ -164,7 +179,7 @@
 
       </div>
       <br>
-      <div class="status" style="color: #08e700"></div>
+      <div class="status"></div>
   </div>
 
   <h3>Task 2 - Static translation and rotation</h3>
@@ -182,7 +197,7 @@
 
   <br>
 
-  The x-axis defined by the drone is rotated <b>90°</b> degrees with respect to the z-axis of the GCS.
+  The x-axis defined by the drone is rotated <b>90°</b> with respect to the z-axis of the GCS.
   </p>
 
   <div>
@@ -213,7 +228,7 @@
 
       </div>
       <br>
-      <div class="status" style="color: #08e700"></div>
+      <div class="status"></div>
   </div>
 
   <br>
