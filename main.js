@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const ASPECT = 16 / 9;
-const EPS = 1e-7;
+const EPS = 1e-5;
 
 function makeAxes(size = 2) {
     const group = new THREE.Group();
@@ -157,3 +157,45 @@ const viz2verify = () => {
 
 viz2.querySelectorAll("input").forEach(el => el.addEventListener("input", viz2showros));
 viz2.querySelectorAll("input").forEach(el => el.addEventListener("input", viz2verify));
+
+const viz3 = createVisualization("viz3");
+const viz3showros = () => {
+    const tx = viz3.querySelector(".tx").value;
+    const ty = viz3.querySelector(".ty").value;
+    const tz = viz3.querySelector(".tz").value;
+    const rx = THREE.MathUtils.degToRad(viz3.querySelector(".rx").value);
+    const ry = THREE.MathUtils.degToRad(viz3.querySelector(".ry").value);
+    const rz = THREE.MathUtils.degToRad(viz3.querySelector(".rz").value);
+
+    viz3.querySelector(".ros2cmd").innerHTML = `ros2 run tf2_ros static_transform_publisher --frame-id gcs --child-frame-id launch_pad --x ${tx} --y ${ty} --z ${tz} --roll ${rx} --pitch ${ry} --yaw ${rz}`;
+}
+
+const viz3verify = () => {
+    const tx = parseFloat(viz3.querySelector(".tx").value);
+    const ty = parseFloat(viz3.querySelector(".ty").value);
+    const tz = parseFloat(viz3.querySelector(".tz").value);
+    const rx = THREE.MathUtils.degToRad(viz3.querySelector(".rx").value);
+    const ry = THREE.MathUtils.degToRad(viz3.querySelector(".ry").value);
+    const rz = THREE.MathUtils.degToRad(viz3.querySelector(".rz").value);
+
+    const success = (
+        (Math.abs(tx - 5.0) < EPS) &&
+        (Math.abs(ty - 2.0) < EPS) &&
+        (Math.abs(tz + 1.0) < EPS) &&
+        (Math.abs(rx - 0.0) < EPS) &&
+        (Math.abs(ry - 0.0) < EPS) &&
+        (Math.abs(rz - Math.PI / 2) < EPS)
+    );
+
+    const status_el = viz3.querySelector(".status");
+    if (success) {
+        status_el.innerHTML = "Success!";
+    } else {
+        status_el.innerHTML = "";
+    }
+}
+
+
+viz3.querySelectorAll("input").forEach(el => el.addEventListener("input", viz3showros));
+viz3.querySelectorAll("input").forEach(el => el.addEventListener("input", viz3verify));
+

@@ -78,6 +78,7 @@
       <li>Rotation around the (parent's) x-axis is referred to as <b>roll</b></li>
       <li>Rotation around the (parent's) y-axis is referred to as <b>pitch</b></li>
       <li>Rotation around the (parent's) z-axis is referred to as <b>yaw</b></li>
+      <li>For simplicity, the input elements for the rotations in this course are defined in <b>degrees</b>. Before computations they are of course translated to radians.</li>
   </ul>
   </p>
 
@@ -166,6 +167,54 @@
       <div class="status" style="color: #08e700"></div>
   </div>
 
+  <h3>Task 2 - Static translation and rotation</h3>
+
+  <p>
+      When transforming the measurements from the drone, you notice by inspection that they are <i>way off!</i>
+      This is weird, you even verified the location using <a href="https://docs.ros.org/en/rolling/Tutorials/Intermediate/RViz/RViz-User-Guide/RViz-User-Guide.html">rviz2</a>.
+
+      A helpful Control member inspects the Mavlink messages sent by PX4 in QGroundControl. He notices that the x-axis defined by the drone on startup does not align with the x-axis you have on the GCS at all!
+      The drone uses its compass to align the x-axis to the <i>North</i>, while you have placed the GCS facing directly East.
+  </p>
+
+  <p>
+  The launch pad is still at <b>5m</b> in the x-direction, <b>2m</b> in the y-direction and <b>-1m</b> in the z-direction relative to the GCS.
+
+  <br>
+
+  The x-axis defined by the drone is rotated <b>90°</b> degrees with respect to the z-axis of the GCS.
+  </p>
+
+  <div>
+      <div id="viz3" class="viz"></div>
+      <pre class="ros2cmd">ros2 run tf2_ros static_transform_publisher --frame-id gcs --child-frame-id launch_pad</pre>
+      <div class="controls">
+          <div class="container-input">
+              x: <input type="number" class="tx" value="0">
+          </div>
+          <div class="container-input">
+              y: <input type="number" class="ty" value="0">
+          </div>
+          <div class="container-input">
+              z: <input type="number" class="tz" value="0">
+          </div>
+          <div class="container-input">
+              roll: <input type="number" class="rx" value="0">
+          </div>
+          <div class="container-input">
+              pitch: <input type="number" class="ry" value="0">
+          </div>
+          <div class="container-input">
+              yaw: <input type="number" class="rz" value="0">
+          </div>
+          <div class="container-input">
+              <input type="button" class="reset" value="reset"></input>
+          </div>
+
+      </div>
+      <br>
+      <div class="status" style="color: #08e700"></div>
+  </div>
 
   <br>
   <br>
