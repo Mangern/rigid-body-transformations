@@ -12,6 +12,10 @@ function makeAxes(size = 2) {
     return group;
 }
 
+function quatApproxEquals(q1, q2) {
+    return (1 - Math.abs(q1.dot(q2))) < EPS;
+}
+
 function matrixToString(mat) {
     const e = mat.elements;
     let s = "";
@@ -137,13 +141,15 @@ const viz2verify = () => {
     const ry = THREE.MathUtils.degToRad(viz2.querySelector(".ry").value);
     const rz = THREE.MathUtils.degToRad(viz2.querySelector(".rz").value);
 
+    const euler = new THREE.Euler(rx, ry, rz, 'ZYX'); 
+    let q = new THREE.Quaternion().setFromEuler(euler);
+
+
     const success = (
         (Math.abs(tx - 5.0) < EPS) &&
         (Math.abs(ty - 2.0) < EPS) &&
         (Math.abs(tz + 1.0) < EPS) &&
-        (Math.abs(rx - 0.0) < EPS) &&
-        (Math.abs(ry - 0.0) < EPS) &&
-        (Math.abs(rz - 0.0) < EPS)
+        quatApproxEquals(q, new THREE.Quaternion().identity())
     );
 
     const status_el = viz2.querySelector(".status");
@@ -180,13 +186,14 @@ const viz3verify = () => {
     const ry = THREE.MathUtils.degToRad(viz3.querySelector(".ry").value);
     const rz = THREE.MathUtils.degToRad(viz3.querySelector(".rz").value);
 
+    const euler = new THREE.Euler(rx, ry, rz, 'ZYX'); 
+    let q = new THREE.Quaternion().setFromEuler(euler);
+
     const success = (
         (Math.abs(tx - 5.0) < EPS) &&
         (Math.abs(ty - 2.0) < EPS) &&
         (Math.abs(tz + 1.0) < EPS) &&
-        (Math.abs(rx - 0.0) < EPS) &&
-        (Math.abs(ry - 0.0) < EPS) &&
-        (Math.abs(rz - Math.PI / 2) < EPS)
+        quatApproxEquals(q, new THREE.Quaternion(0.0, 0.0, 0.7071067811865475, 0.7071067811865475))
     );
 
     const status_el = viz3.querySelector(".status");
@@ -223,13 +230,14 @@ const viz4verify = () => {
     const ry = THREE.MathUtils.degToRad(viz4.querySelector(".ry").value);
     const rz = THREE.MathUtils.degToRad(viz4.querySelector(".rz").value);
 
+    const euler = new THREE.Euler(rx, ry, rz, 'ZYX'); 
+    let q = new THREE.Quaternion().setFromEuler(euler);
+
     const success = (
         (Math.abs(tx - 0.2) < EPS) &&
         (Math.abs(ty - 0.0) < EPS) &&
         (Math.abs(tz + 0.05) < EPS) &&
-        (Math.abs(rx - Math.PI) < EPS) &&
-        (Math.abs(ry - 0.0) < EPS) &&
-        (Math.abs(rz + Math.PI / 2) < EPS)
+        quatApproxEquals(q, new THREE.Quaternion(0.7071067811865475, -0.7071067811865475, 0.0, 0.0))
     );
 
     const status_el = viz4.querySelector(".status");
