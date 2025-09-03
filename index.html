@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Rigid Body Transform Prototype</title>
   <style>
-    body { margin: 0; padding-left: 2rem; padding-right: 2rem; font-family: monospace; }
+    body { margin: 0; font-family: monospace; }
     #ui {
       position: absolute; top: 10px; left: 10px;
       background: rgba(255,255,255,0.9); padding: 10px;
@@ -200,9 +200,75 @@
   The x-axis defined by the drone is rotated <b>90°</b> with respect to the z-axis of the GCS.
   </p>
 
+  <p>
+  Please fix the transformation <b>gcs -> launch_pad</b>.
+  </p>
+
   <div>
       <div id="viz3" class="viz"></div>
       <pre class="ros2cmd">ros2 run tf2_ros static_transform_publisher --frame-id gcs --child-frame-id launch_pad</pre>
+      <div class="controls">
+          <div class="container-input">
+              x: <input type="number" class="tx" value="0">
+          </div>
+          <div class="container-input">
+              y: <input type="number" class="ty" value="0">
+          </div>
+          <div class="container-input">
+              z: <input type="number" class="tz" value="0">
+          </div>
+          <div class="container-input">
+              roll: <input type="number" class="rx" value="0">
+          </div>
+          <div class="container-input">
+              pitch: <input type="number" class="ry" value="0">
+          </div>
+          <div class="container-input">
+              yaw: <input type="number" class="rz" value="0">
+          </div>
+          <div class="container-input">
+              <input type="button" class="reset" value="reset"></input>
+          </div>
+
+      </div>
+      <br>
+      <div class="status"></div>
+  </div>
+
+  <h3>Task 3 - Static translation and rotation II</h3>
+
+  <p>
+    On the next workday you prepare the drone for testing once again. You notice that some of the transforms you proudly had set up are gone!
+    Listening to the <i>All Meeting</i> presentations, you hear Autonomy say something like "<i>we lost the code</i>" or something. Hmm. They probably didn't pay attention during the git course held earlier...
+  </p>
+
+  <p>
+      Specifically, the sensor you are using is a camera, and the transformation <b>drone_flu -> camera</b> is gone. The coordinate frame attached to the drone's body is currently defined using the 
+      <b>FLU</b> - <i>Forward, Left, Up</i> - convention. This means that the x-axis points forward, 
+      the y-axis to the left, and the z-axis points up. The camera frame, however, is attached to the <i>optical center</i> of the camera, and the axes are defined as follows:
+      <ul>
+          <li>When looking through the camera lens, the x-axis points to the <b>right</b></li>
+          <li>When looking through the camera lens, the y-axis points <b>down</b></li>
+          <li>The z-axis points <b>out</b> of the camera</li>
+      </ul>
+      Please verify that this coordinate system is right handed.
+      <br>
+      The camera is mounted such that it points downwards, with the top of the image facing the direction of flight. The camera itself if <b>20 cm</b> in front of, and <b>5 cm</b> down
+      relative to the origin of the drone body. Refer to the figure.
+  </p>
+
+  <image style="height: 20rem; width: auto;" src="./figure1.png" />
+
+  <p>
+  In this task, the center of the "world" in the visualization is the drone's body.
+  </p>
+  <p>
+  Please provide the transformation <b>drone_flu -> camera</b>
+
+
+  <div>
+      <div id="viz4" class="viz"></div>
+      <pre class="ros2cmd">ros2 run tf2_ros static_transform_publisher --frame-id drone_flu --child-frame-id camera</pre>
       <div class="controls">
           <div class="container-input">
               x: <input type="number" class="tx" value="0">

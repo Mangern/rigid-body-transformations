@@ -203,3 +203,46 @@ viz3verify();
 viz3.querySelectorAll("input").forEach(el => el.addEventListener("input", viz3showros));
 viz3.querySelectorAll("input").forEach(el => el.addEventListener("input", viz3verify));
 
+const viz4 = createVisualization("viz4");
+const viz4showros = () => {
+    const tx = viz4.querySelector(".tx").value;
+    const ty = viz4.querySelector(".ty").value;
+    const tz = viz4.querySelector(".tz").value;
+    const rx = THREE.MathUtils.degToRad(viz4.querySelector(".rx").value);
+    const ry = THREE.MathUtils.degToRad(viz4.querySelector(".ry").value);
+    const rz = THREE.MathUtils.degToRad(viz4.querySelector(".rz").value);
+
+    viz4.querySelector(".ros2cmd").innerHTML = `ros2 run tf2_ros static_transform_publisher --frame-id drone_flu --child-frame-id camera --x ${tx} --y ${ty} --z ${tz} --roll ${rx} --pitch ${ry} --yaw ${rz}`;
+}
+
+const viz4verify = () => {
+    const tx = parseFloat(viz4.querySelector(".tx").value);
+    const ty = parseFloat(viz4.querySelector(".ty").value);
+    const tz = parseFloat(viz4.querySelector(".tz").value);
+    const rx = THREE.MathUtils.degToRad(viz4.querySelector(".rx").value);
+    const ry = THREE.MathUtils.degToRad(viz4.querySelector(".ry").value);
+    const rz = THREE.MathUtils.degToRad(viz4.querySelector(".rz").value);
+
+    const success = (
+        (Math.abs(tx - 0.2) < EPS) &&
+        (Math.abs(ty - 0.0) < EPS) &&
+        (Math.abs(tz + 0.05) < EPS) &&
+        (Math.abs(rx - Math.PI) < EPS) &&
+        (Math.abs(ry - 0.0) < EPS) &&
+        (Math.abs(rz + Math.PI / 2) < EPS)
+    );
+
+    const status_el = viz4.querySelector(".status");
+    if (success) {
+        status_el.innerHTML = "Success!";
+    } else {
+        status_el.innerHTML = "";
+    }
+}
+viz4showros();
+viz4verify();
+
+
+viz4.querySelectorAll("input").forEach(el => el.addEventListener("input", viz4showros));
+viz4.querySelectorAll("input").forEach(el => el.addEventListener("input", viz4verify));
+
