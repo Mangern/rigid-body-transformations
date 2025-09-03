@@ -260,7 +260,7 @@
   <image style="height: 20rem; width: auto;" src="./figure1.png" />
 
   <p>
-  In this task, the center of the "world" in the visualization is the drone's body.
+  In this task, the center of the "world" in the visualization is the drone's body. Remember that lengths are still in <i>meters</i> and angles in <i>degrees</i>.
   </p>
   <p>
   Please provide the transformation <b>drone_flu -> camera</b>
@@ -292,6 +292,66 @@
               <input type="button" class="reset" value="reset"></input>
           </div>
 
+      </div>
+      <br>
+      <div class="status"></div>
+  </div>
+
+  <h3>Task 4 - Dynamic translation</h3>
+
+  <p>
+    Nice, the static transforms are working correctly. But we still havent provided the transform from the launch pad to the drone.
+  </p>
+
+  <p>
+    It is probably a good idea to do things one at a time, lets start with translation only. The plan is to create a ROS2 node which subscribes to
+    the drone position given by the flight controller (PX4) in some way. Our job is to use a TransformBroadcaster to publish the position of the drone
+    as a transform from the launch pad to the drone_flu frame.
+  </p>
+
+  <p>
+    In this task you will complete the C++ snippet below the visualization. Some of the fields require you to put the correct string in the field,
+    while the numerical field accepts some kind of expression using the local variables in the snippet. You shouldn't have to write anything too complicated.
+    If you are successful, you will see the "Success!" status (as before).
+  </p>
+
+  <p>
+    Please provide the <i>dynamic</i> transform <b>launch_pad -> drone_flu</b>
+  </p>
+
+  <div>
+      <div id="viz5" class="viz"></div>
+      <pre class="ros2cmd"></pre>
+      <div class="controls">
+          <pre>
+// In our beautiful ROS2 node
+void position_callback(geometry_msgs::msg::PointStamped::SharedPtr msg) {
+    const double pos_x = msg->point.x;
+    const double pos_y = msg->point.y;
+    const double pos_z = msg->point.z;
+
+    geometry_msgs::msg::TransformStamped t;
+    t.header.stamp = this->get_clock()->now();
+    t.header.frame_id = "<input type="text" class="frame_id" value="" placeholder="Enter string..">";
+    t.child_frame_id = "<input type="text" class="child_frame_id" placeholder="Enter string..">";
+
+    t.transform.translation.x = <input type="text" class="tx" value="" placeholder="Enter expression..">;
+    t.transform.translation.y = <input type="text" class="ty" value="" placeholder="Enter expression..">;
+    t.transform.translation.z = <input type="text" class="tz" value="" placeholder="Enter expression..">;
+
+    // tf_broadcaster has type tf2_ros::TransformBroadcaster*
+    tf_broadcaster-><input type="text" class="tf_broadcaster" style="width: 6rem;"value="" placeholder="Enter function name">(t);
+}
+          </pre>
+          <div class="container-input">
+              <input type="hidden" class="rx" value="0">
+          </div>
+          <div class="container-input">
+              <input type="hidden" class="ry" value="0">
+          </div>
+          <div class="container-input">
+              <input type="hidden" class="rz" value="0">
+          </div>
       </div>
       <br>
       <div class="status"></div>
