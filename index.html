@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Rigid Body Transform Prototype</title>
+  <title>TF2 course</title>
   <style>
     body { margin: 0; font-family: monospace; }
     #ui {
@@ -82,9 +82,9 @@
       <li>All translations <b>and rotations</b> are described in the <b>parent frame</b>, i.e. the frame we transform <i>from</i>. 
           This is called extrinsic rotations or Euler 'ZYX' order. 
           Read more <a href="https://mecademic.com/insights/academic-tutorials/space-orientation-euler-angles/">here</a>.</li>
-      <li>Rotation around the (parent) x-axis is referred to as <b>roll</b></li>
-      <li>Rotation around the (parent) y-axis is referred to as <b>pitch</b></li>
-      <li>Rotation around the (parent) z-axis is referred to as <b>yaw</b></li>
+      <li>Rotation around the x-axis is referred to as <b>roll</b></li>
+      <li>Rotation around the y-axis is referred to as <b>pitch</b></li>
+      <li>Rotation around the z-axis is referred to as <b>yaw</b></li>
       <li>For simplicity, the input elements for the rotations in this course are defined in <b>degrees</b>. Before computations they are of course translated to radians.</li>
   </ul>
   </p>
@@ -255,7 +255,7 @@
       </ul>
       Please verify that this coordinate system is right handed.
       <br>
-      The camera is mounted such that it points downwards, with the top of the image facing the direction of flight. The camera itself if <b>20 cm</b> in front of, and <b>5 cm</b> down
+      The camera is mounted such that it points downwards, with the top of the image facing forwards. The camera itself if <b>20 cm</b> in front of, and <b>5 cm</b> down
       relative to the origin of the drone body. Refer to the figure.
   </p>
 
@@ -370,7 +370,18 @@ void position_callback(geometry_msgs::msg::PointStamped::SharedPtr msg) {
   <h3>Task 5 - Dynamic translation and rotation</h3>
 
   <p>
-    Ok, now we need rotation as well. Remember that the x-axis should point in the direction of flight.
+    Nice, almost there. But remember that the drone_flu frame should rotate with the body of the drone as well. Measuring the attitude of the drone is done in 
+    the state estimator of the flight controller. Most often this is already described using a quaternion when you receive it, but remember - 
+    it might not always be described in the frame you are interested in.
+  </p>
+
+  <p>
+  We will still simplify a bit and ignore some of the components of the attitude. Specifically you'll receive the <a href="https://en.wikipedia.org/wiki/Heading_(navigation)">heading</a> of the drone, in <b>radians</b>.
+  The heading is described relative to <i>north</i> (remember the orientation of the launch pad?).
+  </p>
+
+  <p>
+  Please fix the transformation <b>launch_pad -> drone_flu</b>.
   </p>
 
   <div>
