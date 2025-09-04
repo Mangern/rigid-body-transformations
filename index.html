@@ -191,15 +191,11 @@
       This is weird, you even verified the location using <a href="https://docs.ros.org/en/rolling/Tutorials/Intermediate/RViz/RViz-User-Guide/RViz-User-Guide.html">rviz2</a>.
 
       A helpful Control member inspects the Mavlink messages sent by PX4 in QGroundControl. He notices that the x-axis defined by the drone on startup does not align with the x-axis you have on the GCS at all!
-      The drone uses its compass to align the x-axis to the <i>North</i>, while you have placed the GCS facing directly East.
+      The drone uses its compass to align the x-axis to the <i>East</i>, while you have placed the GCS with its x-axis facing directly <i>North</i>.
   </p>
 
   <p>
   The launch pad is still at <b>5m</b> in the x-direction, <b>2m</b> in the y-direction and <b>-1m</b> in the z-direction relative to the GCS.
-
-  <br>
-
-  The x-axis defined by the drone is rotated <b>90°</b> with respect to the z-axis of the GCS.
   </p>
 
   <p>
@@ -376,8 +372,14 @@ void position_callback(geometry_msgs::msg::PointStamped::SharedPtr msg) {
   </p>
 
   <p>
-  We will still simplify a bit and ignore some of the components of the attitude. Specifically you'll receive the <a href="https://en.wikipedia.org/wiki/Heading_(navigation)">heading</a> of the drone, in <b>radians</b>.
-  The heading is described relative to <i>north</i> (remember the orientation of the launch pad?).
+      We will still simplify a bit and ignore some of the components of the attitude. Specifically you'll receive the <a href="https://en.wikipedia.org/wiki/Heading_(navigation)">heading</a> of the drone, in <b>radians</b>.
+      The heading is described relative to <i>north</i> (remember the orientation of the launch pad?). A heading of 0 thus corresponds to north, 90° corresponds to east, 180° to south and 270° to west.
+  </p>
+
+  <p>
+    NOTE: Euler angle input fields are defined in <b>radians</b> in this task. As is the variable "heading_rad".
+    <br>
+    Remember that you can write (almost) arbitrary math expressions in the numberical transform fields, using variables defined in the callback function.
   </p>
 
   <p>
@@ -391,6 +393,7 @@ void position_callback(geometry_msgs::msg::PointStamped::SharedPtr msg) {
           <pre>
 // In our beautiful ROS2 node
 void pose_callback(geometry_msgs::msg::PointStamped::SharedPtr pos_msg, double heading_rad) {
+    constexpr double PI = std::acos(-1);
     const double pos_x = pos_msg->point.x;
     const double pos_y = pos_msg->point.y;
     const double pos_z = pos_msg->point.z;
@@ -407,9 +410,9 @@ void pose_callback(geometry_msgs::msg::PointStamped::SharedPtr pos_msg, double h
     tf2::Quaternion tf2_quat;
 
     tf2_quat.setRPY(
-        <input type="text" class="rx" value="" placeholder="Enter expression.." style="width: 7rem;">,
-        <input type="text" class="ry" value="" placeholder="Enter expression.." style="width: 7rem;">,
-        <input type="text" class="rz" value="" placeholder="Enter expression.." style="width: 7rem;">
+        <input type="text" class="rx" value="" placeholder="Enter expression.." style="width: 12rem;">,
+        <input type="text" class="ry" value="" placeholder="Enter expression.." style="width: 12rem;">,
+        <input type="text" class="rz" value="" placeholder="Enter expression.." style="width: 12rem;">
     );
     
     t.<input type="text" class="transform" value="" placeholder="Enter property name">.rotation = tf2::toMsg(tf2_quat);

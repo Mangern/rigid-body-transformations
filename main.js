@@ -337,7 +337,7 @@ const viz3verify = () => {
         (Math.abs(tx - 5.0) < EPS) &&
         (Math.abs(ty - 2.0) < EPS) &&
         (Math.abs(tz + 1.0) < EPS) &&
-        quatApproxEquals(q, new THREE.Quaternion(0.0, 0.0, 0.7071067811865475, 0.7071067811865475))
+        quatApproxEquals(q, new THREE.Quaternion().setFromEuler(new THREE.Euler(0.0, 0.0, -Math.PI/2, 'ZYX')))
     );
 
     const status_el = viz3.querySelector(".status");
@@ -492,36 +492,51 @@ viz5.container.querySelectorAll("input").forEach(el => el.addEventListener("inpu
 const viz6 = createDynamicVisualization("viz6",
     (ctx) => { // get_tx
         const expr = ctx.container.querySelector(".tx").value || "0";
-        const func = new Function("pos_x", "pos_y", "pos_z", "heading_rad", "return " + expr);
-        return func(ctx.flyer.position.x, ctx.flyer.position.y, ctx.flyer.position.z, 0.0);
+        const func = new Function("pos_x", "pos_y", "pos_z", "heading_rad", "PI", "return " + expr);
+        const euler = new THREE.Euler();
+        euler.setFromQuaternion(ctx.flyer.quaternion, 'ZYX');
+        
+        return func(ctx.flyer.position.x, ctx.flyer.position.y, ctx.flyer.position.z, Math.PI/2 - euler.z, Math.PI);
     },
     (ctx) => { // get_ty
         const expr = ctx.container.querySelector(".ty").value || "0";
-        const func = new Function("pos_x", "pos_y", "pos_z", "heading_rad", "return " + expr);
-        return func(ctx.flyer.position.x, ctx.flyer.position.y, ctx.flyer.position.z, 0.0);
+        const func = new Function("pos_x", "pos_y", "pos_z", "heading_rad", "PI", "return " + expr);
+        const euler = new THREE.Euler();
+        euler.setFromQuaternion(ctx.flyer.quaternion, 'ZYX');
+        
+        return func(ctx.flyer.position.x, ctx.flyer.position.y, ctx.flyer.position.z, Math.PI/2 - euler.z, Math.PI);
     },
     (ctx) => { // get_tz
         const expr = ctx.container.querySelector(".tz").value || "0";
-        const func = new Function("pos_x", "pos_y", "pos_z", "heading_rad", "return " + expr);
-        return func(ctx.flyer.position.x, ctx.flyer.position.y, ctx.flyer.position.z, 0.0);
+        const func = new Function("pos_x", "pos_y", "pos_z", "heading_rad", "PI", "return " + expr);
+        const euler = new THREE.Euler();
+        euler.setFromQuaternion(ctx.flyer.quaternion, 'ZYX');
+        
+        return func(ctx.flyer.position.x, ctx.flyer.position.y, ctx.flyer.position.z, Math.PI/2 - euler.z, Math.PI);
     },
     (ctx) => {
         const expr = ctx.container.querySelector(".rx").value || "0";
-        const func = new Function("pos_x", "pos_y", "pos_z", "heading_rad", "return " + expr);
-        return func(ctx.flyer.position.x, ctx.flyer.position.y, ctx.flyer.position.z, 0.0);
+        const func = new Function("pos_x", "pos_y", "pos_z", "heading_rad", "PI", "return " + expr);
+        const euler = new THREE.Euler();
+        euler.setFromQuaternion(ctx.flyer.quaternion, 'ZYX');
+        
+        return func(ctx.flyer.position.x, ctx.flyer.position.y, ctx.flyer.position.z, Math.PI/2 - euler.z, Math.PI);
     },
     (ctx) => {
         const expr = ctx.container.querySelector(".ry").value || "0";
-        const func = new Function("pos_x", "pos_y", "pos_z", "heading_rad", "return " + expr);
-        return func(ctx.flyer.position.x, ctx.flyer.position.y, ctx.flyer.position.z, 0.0);
+        const func = new Function("pos_x", "pos_y", "pos_z", "heading_rad", "PI", "return " + expr);
+        const euler = new THREE.Euler();
+        euler.setFromQuaternion(ctx.flyer.quaternion, 'ZYX');
+        
+        return func(ctx.flyer.position.x, ctx.flyer.position.y, ctx.flyer.position.z, Math.PI/2 - euler.z, Math.PI);
     },
     (ctx) => {
         const expr = ctx.container.querySelector(".rz").value || "0";
-        const func = new Function("pos_x", "pos_y", "pos_z", "heading_rad", "return " + expr);
+        const func = new Function("pos_x", "pos_y", "pos_z", "heading_rad", "PI", "return " + expr);
         const euler = new THREE.Euler();
-        euler.setFromQuaternion(ctx.flyer.quaternion, 'ZYX'); // extrinsic ZYX
+        euler.setFromQuaternion(ctx.flyer.quaternion, 'ZYX');
 
-        return func(ctx.flyer.position.x, ctx.flyer.position.y, ctx.flyer.position.z, euler.z);
+        return func(ctx.flyer.position.x, ctx.flyer.position.y, ctx.flyer.position.z, Math.PI/2 - euler.z, Math.PI);
     },
 );
 
