@@ -27,6 +27,28 @@ function matrixToString(mat) {
     }
     return s;
 }
+function makeFlyer() {
+    const group = new THREE.Group();
+
+    // Body: small box
+    const body = new THREE.Mesh(
+        new THREE.BoxGeometry(0.3, 0.2, 0.2),
+        new THREE.MeshPhongMaterial({color: 0x00ffcc})
+    );
+    //body.setRotationFromEuler(new THREE.Euler(0.0, Math.PI / 2, 0.0));
+    group.add(body);
+
+    // Nose: cone pointing forward (x+ direction)
+    const nose = new THREE.Mesh(
+        new THREE.ConeGeometry(0.15, 0.4, 16),
+        new THREE.MeshPhongMaterial({color: 0xfc8302})
+    );
+    nose.position.x = 0.35;
+    nose.rotation.z = -Math.PI / 2; // point along +X
+    group.add(nose);
+
+    return group;
+}
 
 
 function createStaticVisualization(containerId) {
@@ -108,7 +130,7 @@ function createStaticVisualization(containerId) {
     return container.parentNode;
 }
 
-function createDynamicVisualization(containerId, get_tx = () => 0, get_ty = () => 0, get_tz = () => 0) {
+function createDynamicVisualization(containerId, get_tx = () => 0, get_ty = () => 0, get_tz = () => 0, get_rx = () => 0, get_ry = () => 0, get_rz = () => 0) {
     const container = document.getElementById(containerId);
 
     const control_container = container.parentNode.querySelector(".controls");
@@ -124,10 +146,12 @@ function createDynamicVisualization(containerId, get_tx = () => 0, get_ty = () =
     scene.add(grid);
     scene.add(new THREE.AxesHelper(2));
 
-    const flyer = new THREE.Mesh(
-        new THREE.SphereGeometry(0.2, 16, 16),
-        new THREE.MeshNormalMaterial()
-    );
+    const light = new THREE.DirectionalLight(0xffffff, 2);
+    light.position.set(5, 5, 5);
+    scene.add(light);
+    scene.add(new THREE.AmbientLight(0xa0a0a0));
+
+    const flyer = makeFlyer();
     scene.add(flyer);
 
     const camera = new THREE.PerspectiveCamera(60, container.clientWidth/container.clientHeight, 0.1, 100);
@@ -152,15 +176,14 @@ function createDynamicVisualization(containerId, get_tx = () => 0, get_ty = () =
 
     // --- Update transform from sliders ---
     function updateTransform() {
-        let tx; 
+        let tx, ty, tz, rx, ry, rz;
+
         try { tx = get_tx(ctx); } catch { tx = 0; };
-        let ty; 
         try { ty = get_ty(ctx); } catch { ty = 0; };
-        let tz; 
         try { tz = get_tz(ctx); } catch { tz = 0; };
-        const rx = THREE.MathUtils.degToRad(control_container.querySelector(".rx").value || 0);
-        const ry = THREE.MathUtils.degToRad(control_container.querySelector(".ry").value || 0);
-        const rz = THREE.MathUtils.degToRad(control_container.querySelector(".rz").value || 0);
+        try { rx = get_rx(ctx); } catch { rx = 0; };
+        try { ry = get_ry(ctx); } catch { ry = 0; };
+        try { rz = get_rz(ctx); } catch { rz = 0; };
 
         const euler = new THREE.Euler(rx, ry, rz, 'ZYX'); 
 
@@ -204,8 +227,11 @@ function createDynamicVisualization(containerId, get_tx = () => 0, get_ty = () =
         flyer.position.z = 1.0; // keep it above ground
 
         // Optional: make it face tangent direction
-        flyer.lookAt(0, 0, 1); // keeps "up" along Z
-        flyer.rotateOnAxis(new THREE.Vector3(0,0,1), speed * t + Math.PI/2);
+        //flyer.lookAt(flyer.position.x - speed * Math.sin(speed*t), flyer.position.y + speed* Math.cos(speed * t), flyer.position.z);
+        //flyer.rotateOnAxis(new THREE.Vector3(0,0,1), speed * t + Math.PI/2);
+        flyer.setRotationFromEuler(new THREE.Euler(
+            0, 0, speed * t + Math.PI / 2
+        ));
 
         controls.update();
         if ((++cnt) % PERIOD == 0) {
@@ -373,20 +399,29 @@ viz4.querySelectorAll("input").forEach(el => el.addEventListener("input", viz4sh
 viz4.querySelectorAll("input").forEach(el => el.addEventListener("input", viz4verify));
 
 const viz5 = createDynamicVisualization("viz5", 
-    (ctx) => { // get_x
+    (ctx) => { // get_tx
         const expr = ctx.container.querySelector(".tx").value || "0";
-        const func = new Function("pos_x", "return " + expr);
-        return func(ctx.flyer.position.x);
+        const func = new Function("pos_x", "pos_y", "pos_z", "return " + expr);
+        return func(ctx.flyer.position.x, ctx.flyer.position.y, ctx.flyer.position.z);
     },
-    (ctx) => { // get_y
+    (ctx) => { // get_ty
         const expr = ctx.container.querySelector(".ty").value || "0";
-        const func = new Function("pos_y", "return " + expr);
-        return func(ctx.flyer.position.y);
+        const func = new Function("pos_x", "pos_y", "pos_z", "return " + expr);
+        return func(ctx.flyer.position.x, ctx.flyer.position.y, ctx.flyer.position.z);
     },
-    (ctx) => { // get_z
+    (ctx) => { // get_tz
         const expr = ctx.container.querySelector(".tz").value || "0";
-        const func = new Function("pos_z", "return " + expr);
-        return func(ctx.flyer.position.z);
+        const func = new Function("pos_x", "pos_y", "pos_z", "return " + expr);
+        return func(ctx.flyer.position.x, ctx.flyer.position.y, ctx.flyer.position.z);
+    },
+    (ctx) => {
+        return parseFloat(ctx.container.querySelector(".rx").value) || 0.0;
+    },
+    (ctx) => {
+        return parseFloat(ctx.container.querySelector(".ry").value) || 0.0;
+    },
+    (ctx) => {
+        return parseFloat(ctx.container.querySelector(".rz").value) || 0.0;
     },
 );
 
@@ -408,6 +443,9 @@ const viz5verify = () => {
         }
         if (viz5.container.querySelector(".tf_broadcaster").value.trim() != "sendTransform") {
             return false;
+        }
+        for (const el of viz5.container.querySelectorAll(".transform")) {
+            if (el.value.trim() != "transform") return false;
         }
         if (num_good / TRIES < 0.9) {
             return false;
@@ -450,3 +488,106 @@ const viz5verify = () => {
 
 viz5verify();
 viz5.container.querySelectorAll("input").forEach(el => el.addEventListener("input", viz5verify));
+
+const viz6 = createDynamicVisualization("viz6",
+    (ctx) => { // get_tx
+        const expr = ctx.container.querySelector(".tx").value || "0";
+        const func = new Function("pos_x", "pos_y", "pos_z", "heading_rad", "return " + expr);
+        return func(ctx.flyer.position.x, ctx.flyer.position.y, ctx.flyer.position.z, 0.0);
+    },
+    (ctx) => { // get_ty
+        const expr = ctx.container.querySelector(".ty").value || "0";
+        const func = new Function("pos_x", "pos_y", "pos_z", "heading_rad", "return " + expr);
+        return func(ctx.flyer.position.x, ctx.flyer.position.y, ctx.flyer.position.z, 0.0);
+    },
+    (ctx) => { // get_tz
+        const expr = ctx.container.querySelector(".tz").value || "0";
+        const func = new Function("pos_x", "pos_y", "pos_z", "heading_rad", "return " + expr);
+        return func(ctx.flyer.position.x, ctx.flyer.position.y, ctx.flyer.position.z, 0.0);
+    },
+    (ctx) => {
+        const expr = ctx.container.querySelector(".rx").value || "0";
+        const func = new Function("pos_x", "pos_y", "pos_z", "heading_rad", "return " + expr);
+        return func(ctx.flyer.position.x, ctx.flyer.position.y, ctx.flyer.position.z, 0.0);
+    },
+    (ctx) => {
+        const expr = ctx.container.querySelector(".ry").value || "0";
+        const func = new Function("pos_x", "pos_y", "pos_z", "heading_rad", "return " + expr);
+        return func(ctx.flyer.position.x, ctx.flyer.position.y, ctx.flyer.position.z, 0.0);
+    },
+    (ctx) => {
+        const expr = ctx.container.querySelector(".rz").value || "0";
+        const func = new Function("pos_x", "pos_y", "pos_z", "heading_rad", "return " + expr);
+        const euler = new THREE.Euler();
+        euler.setFromQuaternion(ctx.flyer.quaternion, 'ZYX'); // extrinsic ZYX
+
+        return func(ctx.flyer.position.x, ctx.flyer.position.y, ctx.flyer.position.z, euler.z);
+    },
+);
+
+const viz6verify = () => {
+    const status_el = viz6.container.querySelector(".status");
+    status_el.style.color = "black";
+    status_el.innerHTML = "Checking...";
+    const TRIES = 40;
+    const TIMEOUT = 5;
+    let num_left = TRIES;
+    let num_good = 0;
+
+    const verify = () => {
+        if (viz6.container.querySelector(".frame_id").value.trim() != "launch_pad") {
+            return false;
+        }
+        if (viz6.container.querySelector(".child_frame_id").value.trim() != "drone_flu") {
+            return false;
+        }
+        if (viz6.container.querySelector(".tf_broadcaster").value.trim() != "sendTransform") {
+            return false;
+        }
+        for (const el of viz6.container.querySelectorAll(".transform")) {
+            if (el.value.trim() != "transform") return false;
+        }
+        if (num_good / TRIES < 0.9) {
+            return false;
+        }
+        return true;
+    }
+
+    // scuffed check position
+    const handler = () => {
+        const tx = viz6.axis.position.x;
+        const ty = viz6.axis.position.y;
+        const tz = viz6.axis.position.z;
+
+        const fx = viz6.flyer.position.x;
+        const fy = viz6.flyer.position.y;
+        const fz = viz6.flyer.position.z;
+
+        const good = (
+            (Math.abs(tx - fx) < EPS) &&
+            (Math.abs(ty - fy) < EPS) &&
+            (Math.abs(tz - fz) < EPS) && 
+            quatApproxEquals(viz6.axis.quaternion, viz6.flyer.quaternion)
+        );
+
+        if (good) {
+            ++num_good;
+        }
+
+        if (num_left-- > 0) {
+            setTimeout(handler, TIMEOUT);
+        } else {
+            if (verify()) {
+                status_el.style.color = "#08d700";
+                status_el.innerHTML = "Success!";
+            } else {
+                status_el.innerHTML = "";
+            }
+        }
+    }
+    setTimeout(handler, TIMEOUT);
+
+}
+
+viz6.container.querySelectorAll("input").forEach(el => el.addEventListener("input", viz6verify));
+viz6verify();

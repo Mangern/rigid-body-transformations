@@ -8,6 +8,8 @@
     #ui {
       position: absolute; top: 10px; left: 10px;
       background: rgba(255,255,255,0.9); padding: 10px;
+      padding-left: 40px;
+      padding-right: 40px;
       border-radius: 8px; font-size: 14px;
     }
     input { width: 80px; }
@@ -316,6 +318,14 @@
   </p>
 
   <p>
+  Some resources:
+  <ul>
+      <li><a href="https://docs.ros.org/en/latest/api/tf2_ros/html/c++/namespacetf2__ros.html">tf2_ros documentation</a></li>
+      <li><a href="https://docs.ros2.org/latest/api/geometry_msgs/index-msg.html">geometry_msgs documentation</a></li>
+  </ul>
+  </p>
+
+  <p>
     Please provide the <i>dynamic</i> transform <b>launch_pad -> drone_flu</b>
   </p>
 
@@ -335,9 +345,9 @@ void position_callback(geometry_msgs::msg::PointStamped::SharedPtr msg) {
     t.header.frame_id = "<input type="text" class="frame_id" value="" placeholder="Enter string..">";
     t.child_frame_id = "<input type="text" class="child_frame_id" placeholder="Enter string..">";
 
-    t.transform.translation.x = <input type="text" class="tx" value="" placeholder="Enter expression..">;
-    t.transform.translation.y = <input type="text" class="ty" value="" placeholder="Enter expression..">;
-    t.transform.translation.z = <input type="text" class="tz" value="" placeholder="Enter expression..">;
+    t.<input type="text" class="transform" value="" placeholder="Enter property name">.translation.x = <input type="text" class="tx" value="" placeholder="Enter expression..">;
+    t.<input type="text" class="transform" value="" placeholder="Enter property name">.translation.y = <input type="text" class="ty" value="" placeholder="Enter expression..">;
+    t.<input type="text" class="transform" value="" placeholder="Enter property name">.translation.z = <input type="text" class="tz" value="" placeholder="Enter expression..">;
 
     // tf_broadcaster has type tf2_ros::TransformBroadcaster*
     tf_broadcaster-><input type="text" class="tf_broadcaster" style="width: 6rem;"value="" placeholder="Enter function name">(t);
@@ -352,6 +362,51 @@ void position_callback(geometry_msgs::msg::PointStamped::SharedPtr msg) {
           <div class="container-input">
               <input type="hidden" class="rz" value="0">
           </div>
+      </div>
+      <br>
+      <div class="status"></div>
+  </div>
+
+  <h3>Task 5 - Dynamic translation and rotation</h3>
+
+  <p>
+    Ok, now we need rotation as well. Remember that the x-axis should point in the direction of flight.
+  </p>
+
+  <div>
+      <div id="viz6" class="viz"></div>
+      <pre class="ros2cmd"></pre>
+      <div class="controls">
+          <pre>
+// In our beautiful ROS2 node
+void pose_callback(geometry_msgs::msg::PointStamped::SharedPtr pos_msg, double heading_rad) {
+    const double pos_x = pos_msg->point.x;
+    const double pos_y = pos_msg->point.y;
+    const double pos_z = pos_msg->point.z;
+
+    geometry_msgs::msg::TransformStamped t;
+    t.header.stamp = this->get_clock()->now();
+    t.header.frame_id = "<input type="text" class="frame_id" value="" placeholder="Enter string..">";
+    t.child_frame_id = "<input type="text" class="child_frame_id" placeholder="Enter string..">";
+
+    t.<input type="text" class="transform" value="" placeholder="Enter property name">.translation.x = <input type="text" class="tx" value="" placeholder="Enter expression..">;
+    t.<input type="text" class="transform" value="" placeholder="Enter property name">.translation.y = <input type="text" class="ty" value="" placeholder="Enter expression..">;
+    t.<input type="text" class="transform" value="" placeholder="Enter property name">.translation.z = <input type="text" class="tz" value="" placeholder="Enter expression..">;
+
+    tf2::Quaternion tf2_quat;
+
+    tf2_quat.setRPY(
+        <input type="text" class="rx" value="" placeholder="Enter expression.." style="width: 7rem;">,
+        <input type="text" class="ry" value="" placeholder="Enter expression.." style="width: 7rem;">,
+        <input type="text" class="rz" value="" placeholder="Enter expression.." style="width: 7rem;">
+    );
+    
+    t.<input type="text" class="transform" value="" placeholder="Enter property name">.rotation = tf2::toMsg(tf2_quat);
+
+    // tf_broadcaster has type tf2_ros::TransformBroadcaster*
+    tf_broadcaster-><input type="text" class="tf_broadcaster" style="width: 6rem;"value="" placeholder="Enter function name">(t);
+}
+          </pre>
       </div>
       <br>
       <div class="status"></div>
